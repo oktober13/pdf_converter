@@ -1,6 +1,6 @@
 import PyPDF2
 import textract
-
+import pdfplumber
 
 def extract_text_with_pypdf(pdf_path):
     with open(pdf_path, 'rb') as file:
@@ -18,6 +18,15 @@ def extract_text_with_pypdf(pdf_path):
 def extract_text_with_textract(pdf_path):
     text = textract.process(pdf_path)
     return text.decode('utf-8')
+
+
+def extract_text_with_pdfplumber(pdf_path):
+    with pdfplumber.open(pdf_path) as pdf:
+        extracted_text = ""
+        for page in pdf.pages:
+            extracted_text += page.extract_text()
+
+        return extracted_text
 
 
 def save_text_to_file(text, file_path):
@@ -40,6 +49,12 @@ def main():
     txt_path_textract = pdf_path.replace('.pdf', '_textract.txt')
     save_text_to_file(extracted_text_textract, txt_path_textract)
     print(f"Текст, извлеченный с помощью textract, успешно сохранен в файле: {txt_path_textract}")
+
+    # Извлечение текста с использованием pdfplumber
+    extracted_text_pdfplumber = extract_text_with_pdfplumber(pdf_path)
+    txt_path_pdfplumber = pdf_path.replace('.pdf', '_pdfplumber.txt')
+    save_text_to_file(extracted_text_pdfplumber, txt_path_pdfplumber)
+    print(f"Текст, извлеченный с помощью pdfplumber, успешно сохранен в файле: {txt_path_pdfplumber}")
 
 
 if __name__ == '__main__':
